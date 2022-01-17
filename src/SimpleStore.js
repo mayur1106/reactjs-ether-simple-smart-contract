@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import TodoList_abi from "./TodoList_abi.json";
 const SimpleStore = () => {
-  const contractAddress = "0xdc7A017000cfa23913db89E9F641efeec3151430";
+  const contractAddress = "0xCfc61E5E000726e73e320d33A69Fa7B3E539F4ac";
   //Variables
   const [errorMessage, setErrorMessage] = useState(null);
   const [defaultAccount, setDefaultAccount] = useState(null);
@@ -37,7 +37,6 @@ const SimpleStore = () => {
     setProvider(tempProvider);
     let tempSigner = tempProvider.getSigner();
     setSigner(tempSigner);
-console.log(TodoList_abi);
     let tempContract = new ethers.Contract(
       contractAddress,
       TodoList_abi.abi,
@@ -47,10 +46,12 @@ console.log(TodoList_abi);
     setContract(tempContract);
   };
   const getCurrentVal = async () => {
-    alert("ok");
-    let val = await contract.tasks;
+    setCurrentContractVal("fetching value...");
+    // await contract.createTask("New task");
+    let val = await contract.tasks(2);
+    console.log(contract);
     console.log(val);
-    // setCurrentContractVal(val)
+    setCurrentContractVal(val.content);
   };
   return (
     <div>
@@ -58,6 +59,7 @@ console.log(TodoList_abi);
       <button onClick={connectWalletHandler}>{connButtonText}</button>
       <h3>Address:{defaultAccount}</h3>
       <button onClick={getCurrentVal}>Get Current Value</button>
+      <h3>{currentContractVal}</h3>
     </div>
   );
 };

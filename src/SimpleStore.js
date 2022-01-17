@@ -8,11 +8,15 @@ const SimpleStore = () => {
   const [defaultAccount, setDefaultAccount] = useState(null);
   const [connButtonText, setConnButtonText] = useState("Connect Wallet");
 
+  const [balanceButton, setBalanceButton] = useState("Fetch balance");
+
   const [currentContractVal, setCurrentContractVal] = useState(null);
 
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
+
+  const [balance, setDefaultBalance] = useState(0);
 
   const connectWalletHandler = () => {
     if (window.ethereum) {
@@ -27,12 +31,12 @@ const SimpleStore = () => {
     }
   };
 
-  const accountChangedHandler = (_account) => {
-    setDefaultAccount(_account);
-    updateEther();
+  const accountChangedHandler = async (_account) => {
+    await setDefaultAccount(_account);
+    await updateEther();
+    getDefaultBalance();
   };
-
-  const updateEther = () => {
+  const updateEther = async () => {
     let tempProvider = new ethers.providers.Web3Provider(window.ethereum);
     setProvider(tempProvider);
     let tempSigner = tempProvider.getSigner();
@@ -42,22 +46,34 @@ const SimpleStore = () => {
       TodoList_abi.abi,
       tempSigner
     );
-
     setContract(tempContract);
   };
+  const getDefaultBalance = async () => {
+    setBalanceButton("Fetching Balance....");
+    let balance = defaultAccount
+      ? await provider.getBalance(defaultAccount)
+      : 0;
+    setDefaultBalance(ethers.utils.formatEther(balance));
+    setBalanceButton("Fetch Balance");
+  };
+
   const getCurrentVal = async () => {
     setCurrentContractVal("fetching value...");
     // await contract.createTask("New task");
+
     let val = await contract.tasks(2);
     console.log(contract);
     console.log(val);
     setCurrentContractVal(val.content);
+    updateEther();
   };
   return (
     <div>
       <h3>{"Get Set Interaction with contract"}</h3>
       <button onClick={connectWalletHandler}>{connButtonText}</button>
       <h3>Address:{defaultAccount}</h3>
+      <button onClick={getDefaultBalance}>{balanceButton}</button>
+      <h3>Balance:{balance} Ether</h3>
       <button onClick={getCurrentVal}>Get Current Value</button>
       <h3>{currentContractVal}</h3>
     </div>

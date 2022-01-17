@@ -1,4 +1,4 @@
-# Getting Started with simple sart contract using React and ether.
+# Getting Started with simple smart contract using React, Ethereum and Metamask.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
